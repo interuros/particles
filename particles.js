@@ -26,9 +26,18 @@ let mouse = {
     y: undefined
 }
 
-window.addEventListener('mousemove', () =>{
-    mouse.x = event.x;
-    mouse.y = event.y;
+particlesContainer.addEventListener('mousemove', (event) =>{
+    mouse.x = event.clientX;
+    mouse.y = event.clientY;
+
+    console.log('prc');
+    
+
+});
+
+particlesContainer.addEventListener('mouseleave', () =>{
+    mouse.x = undefined;
+    mouse.y = undefined;
 });
 
 window.addEventListener('resize', () =>{
@@ -66,15 +75,16 @@ class Dot {
         this.drawDot = () => {
             c.beginPath();
             c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-            c.strokeStyle = '#ffffff';
-            c.fillStyle = '#ffffff';
+            c.strokeStyle = particlesAttributes.particlesColor;
+            c.fillStyle = particlesAttributes.particlesColor;
             c.stroke();
             c.fill();
         } 
 
         this.animate = () => {
 
-           if(mouse.x - this.x < 70 && mouse.x - this.x > -70 && mouse.y - this.y < 70 && mouse.y - this.y > -70){
+           
+            if(mouse.x - this.x < 40 && mouse.x - this.x > -40 && mouse.y - this.y < 40 && mouse.y - this.y > -40){
                 if(this.x < mouse.x)
                     this.x -= 5;
                 else 
@@ -86,7 +96,6 @@ class Dot {
                 else 
                     this.y += 5;
             }
-
            
 
             if(this.x + this.radius > canvas.width || this.x - this.radius < 0){
@@ -116,9 +125,34 @@ let randomize = () => {
 
     let x = Math.random() * canvas.width;
     let y = Math.random() * canvas.height;
-    let vx = (Math.random() - 0.5) * 1;
-    let vy = (Math.random() - 0.5) * 1;
-    let radius = 1;
+    let vx = 0;
+    let vy = 0;
+    if(particlesAttributes.dotSpeed === "very slow"){
+         vx = (Math.random() - 0.5) * 1.5;
+         vy = (Math.random() - 0.5) * 1.5;
+    } else if(particlesAttributes.dotSpeed === "slow"){
+         vx = (Math.random() - 0.5) * 3;
+         vy = (Math.random() - 0.5) * 3;
+    } else if(particlesAttributes.dotSpeed === "fast"){
+         vx = (Math.random() - 0.5) * 6;
+         vy = (Math.random() - 0.5) * 6;
+    } else {
+         if(typeof(particlesAttributes.dotSpeed) === "number"){
+            vx = (Math.random() - 0.5) * particlesAttributes.dotSpeed;
+            vy = (Math.random() - 0.5) * particlesAttributes.dotSpeed;
+        } else {
+
+            vx = (Math.random() - 0.5) * 4;
+            vy = (Math.random() - 0.5) * 4;
+
+        }
+    }
+
+    
+
+
+
+    let radius = particlesAttributes.particlesRadius;
 
     let obj = {
         x: x,
@@ -133,21 +167,31 @@ let randomize = () => {
 };
 
 
+let createDot = () =>{
+
+    let attributes = randomize();
+
+    let dot = new Dot(attributes.x, attributes.y, attributes.vx, attributes.vy, attributes.radius);
+
+    dot.correctPosition();
+
+    dotArr.push(dot);
+
+}
+
+
 let loopDots = () => {
 
-    for(let i = 0; i < 50; i++ ){
-        let attributes = randomize();
+    for(let i = 0; i < particlesAttributes.numberOfDots; i++ ){
+        
+        createDot();
 
-        let dot = new Dot(attributes.x, attributes.y, attributes.vx, attributes.vy, attributes.radius);
-
-        dot.correctPosition();
-
-        dotArr.push(dot);
     }
 
 }
 
 loopDots();
+
 
 
 console.log(dotArr);
@@ -175,8 +219,8 @@ let particlesAnimate = () => {
                     c.beginPath();
                     c.moveTo(dotArr[i].x, dotArr[i].y);
                     c.lineTo(dotArr[j].x, dotArr[j].y);
-                    c.lineWidth = 0.3 / distance;
-                    c.strokeStyle = '#ffffff';
+                    c.lineWidth = (particlesAttributes.particlesRadius / 1.5) / distance;
+                    c.strokeStyle = particlesAttributes.particlesColor;
                     c.stroke();
                 }
             }
@@ -189,3 +233,22 @@ let particlesAnimate = () => {
 
 
 particlesAnimate();
+
+
+particlesContainer.addEventListener('click', () => {
+
+
+    let attributes = randomize();
+
+    let dot = new Dot(mouse.x, mouse.y, attributes.vx, attributes.vy, attributes.radius);
+
+    dot.correctPosition();
+
+    dotArr.push(dot);
+
+
+});
+
+
+
+
