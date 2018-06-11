@@ -29,10 +29,6 @@ let mouse = {
 particlesContainer.addEventListener('mousemove', () =>{
     mouse.x = event.x;
     mouse.y = event.y;
-
-    console.log('prc');
-    
-
 });
 
 particlesContainer.addEventListener('mouseleave', () =>{
@@ -81,7 +77,7 @@ class Dot {
             c.fill();
         } 
 
-        this.animate = () => {
+        this.animateDot = () => {
 
            
             if(mouse.x - this.x < 40 && mouse.x - this.x > -40 && mouse.y - this.y < 40 && mouse.y - this.y > -40){
@@ -195,63 +191,79 @@ let loopDots = () => {
 
 loopDots();
 
+let usedDot = [];
 
-
-console.log(dotArr);
 
 
 
 let particlesAnimate = () => {
-    
+
+    usedDot = [];
+
+    for(let i = 0; i < dotArr.length; i++){
+        usedDot.push(false);
+    }
+
     requestAnimationFrame(particlesAnimate);
     c.clearRect(0, 0, canvas.width, canvas.height);
+    
 
     for(let dots of dotArr){
         dots.drawDot();
-        dots.animate();
+        dots.animateDot();
 
         for( let i = 0; i < dotArr.length; i ++){
 
             for(let j = 0; j < dotArr.length; j ++){
+        
+                if(j !== i && usedDot[j] === false){
+        
+                        let distance = Math.sqrt(Math.pow(dotArr[i].x - dotArr[j].x, 2) + Math.pow(dotArr[i].y - dotArr[j].y, 2));
 
-                if(j != i){
-                let distance = Math.sqrt(Math.pow(dotArr[i].x - dotArr[j].x, 2) + Math.pow(dotArr[i].y - dotArr[j].y, 2));
 
-                if(distance < 170){
-
-                    c.beginPath();
-                    c.moveTo(dotArr[i].x, dotArr[i].y);
-                    c.lineTo(dotArr[j].x, dotArr[j].y);
-                    c.lineWidth = (particlesAttributes.particlesRadius / 1.6) / distance;
-                    c.strokeStyle = particlesAttributes.particlesColor;
-                    c.stroke();
+                        if(distance <= particlesAttributes.maxLineLength){
+                            
+                            c.beginPath();
+                            c.moveTo(dotArr[i].x, dotArr[i].y);
+                            c.lineTo(dotArr[j].x, dotArr[j].y);
+                            c.lineWidth = (particlesAttributes.particlesRadius / 0.1) / distance;
+                            c.strokeStyle = particlesAttributes.particlesColor;
+                            c.stroke();
+                            
+                        }
                 }
             }
-            }
-    
+
+            usedDot[i] = true;
         }
+        
     }
+
+
+    
 }
 
 
 
 particlesAnimate();
 
+particlesContainer.addEventListener('mousedown', (event) =>{
 
-particlesContainer.addEventListener('click', () => {
+    if (event.which == 2) {
+        event.preventDefault();
+        dotArr.pop();
+        
+    } else if(event.which == 1){
 
+        let attributes = randomize();
 
-    let attributes = randomize();
+        let dot = new Dot(mouse.x, mouse.y, attributes.vx, attributes.vy, attributes.radius);
 
-    let dot = new Dot(mouse.x, mouse.y, attributes.vx, attributes.vy, attributes.radius);
+        dot.correctPosition();
 
-    dot.correctPosition();
+        dotArr.push(dot);
 
-    dotArr.push(dot);
+    }
 
 
 });
-
-
-
-
