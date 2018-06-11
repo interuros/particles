@@ -2,8 +2,8 @@
 
 
 let particlesContainer = document.querySelector('.particles-js');
-let canvas = document.querySelector('canvas');
-
+let canvas = document.createElement('canvas');
+particlesContainer.appendChild(canvas)
 
 console.log(particlesContainer.offsetWidth);
 
@@ -26,9 +26,9 @@ let mouse = {
     y: undefined
 }
 
-particlesContainer.addEventListener('mousemove', (event) =>{
-    mouse.x = event.clientX;
-    mouse.y = event.clientY;
+particlesContainer.addEventListener('mousemove', () =>{
+    mouse.x = event.x;
+    mouse.y = event.y;
 
     console.log('prc');
     
@@ -128,22 +128,25 @@ let randomize = () => {
     let vx = 0;
     let vy = 0;
     if(particlesAttributes.dotSpeed === "very slow"){
-         vx = (Math.random() - 0.5) * 1.5;
-         vy = (Math.random() - 0.5) * 1.5;
+         vx = (Math.random() - 0.5) * 0.8;
+         vy = (Math.random() - 0.5) * 0.8;
     } else if(particlesAttributes.dotSpeed === "slow"){
          vx = (Math.random() - 0.5) * 3;
          vy = (Math.random() - 0.5) * 3;
     } else if(particlesAttributes.dotSpeed === "fast"){
-         vx = (Math.random() - 0.5) * 6;
-         vy = (Math.random() - 0.5) * 6;
-    } else {
+         vx = (Math.random() - 0.5) * 10;
+         vy = (Math.random() - 0.5) * 10;
+    } else if(particlesAttributes.dotSpeed === "supersonic"){
+        vx = (Math.random() - 0.5) * 30;
+        vy = (Math.random() - 0.5) * 30;
+    }else {
          if(typeof(particlesAttributes.dotSpeed) === "number"){
             vx = (Math.random() - 0.5) * particlesAttributes.dotSpeed;
             vy = (Math.random() - 0.5) * particlesAttributes.dotSpeed;
         } else {
 
-            vx = (Math.random() - 0.5) * 4;
-            vy = (Math.random() - 0.5) * 4;
+            vx = (Math.random() - 0.5) * 2;
+            vy = (Math.random() - 0.5) * 2;
 
         }
     }
@@ -214,12 +217,12 @@ let particlesAnimate = () => {
                 if(j != i){
                 let distance = Math.sqrt(Math.pow(dotArr[i].x - dotArr[j].x, 2) + Math.pow(dotArr[i].y - dotArr[j].y, 2));
 
-                if(distance < 140){
+                if(distance < 170){
 
                     c.beginPath();
                     c.moveTo(dotArr[i].x, dotArr[i].y);
                     c.lineTo(dotArr[j].x, dotArr[j].y);
-                    c.lineWidth = (particlesAttributes.particlesRadius / 1.5) / distance;
+                    c.lineWidth = (particlesAttributes.particlesRadius / 1.6) / distance;
                     c.strokeStyle = particlesAttributes.particlesColor;
                     c.stroke();
                 }
